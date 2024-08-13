@@ -44,9 +44,13 @@ export default function AppRow(prop:{service:PCFWebAPI}) {
         return;
       let context=prop.service.getContext();
       var rowNumber=context.parameters.RowNumber.raw??0;
+      var dataToSent:any={};
+      Object.keys(addRowForm).forEach(el=>{
+        dataToSent[el]=addRowForm[el]?.value;
+      })
       if(rowNumber||rowNumber==0){
         var dataToSentToServer={
-          ...addRowForm,
+          ...dataToSent,
           rowNo:rowNumber.toString()
         };
         console.log('data sending to Dataverse',dataToSentToServer);
