@@ -1,0 +1,5 @@
+.required label::after{
+    content: " *";
+    color: rgb(164, 38, 44);
+    padding-right: 12px;
+}

@@ -63,7 +63,7 @@ export class AttributeGrid implements ComponentFramework.StandardControl<IInputs
     public getOutputs(): IOutputs
     {
         return {
-            RowNumber:this.rowNumber
+           // RowNumber:this.rowNumber
         };
     }
     public updateRowNumber = (newValue: number) => {

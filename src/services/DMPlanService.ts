@@ -44,11 +44,13 @@ export const getAttributes = async (
   }
   return response;
 }; 
-export const getDmRecord=async (service: PCFWebAPI,planId:string, headerRequired:boolean)=>{
+export const getDmRecord=async (service: PCFWebAPI,planId:string, headerRequired:boolean,page:number,size:number)=>{
   var req = {
     // Parameters
     entity: { entityType: "cm_dm_plan", id: planId }, // entity
     HeaderRequired: headerRequired, // Edm.Boolean
+    Page: page, // Edm.Boolean
+    Size: size, // Edm.Boolean
   
     getMetadata: function () {
       return {

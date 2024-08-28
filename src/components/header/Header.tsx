@@ -106,8 +106,7 @@ export default function Header(props:IHeaderProps) {
           setButton([...buttonWithoutEdit])
         }
        },
-      [isEditable])
-    
+      [isEditable])    
       const listButtons = buttons.map(button =>
         <CommandBarButton
           key={button.order}

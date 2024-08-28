@@ -3,6 +3,7 @@ import { useDispatch } from "react-redux";
 import { IAppColumn } from "../../models/column";
 import { FieldType } from "../../models/servicesModel/attributeReponseDto";
 import { useState } from "react";
+import './RenderControl.css';
 
 export default function RenderControl(props:{col:IAppColumn,formSubmitted:boolean,fieldValue:any,error:any,
   onFormValueChange:any}) {
@@ -67,21 +68,19 @@ export default function RenderControl(props:{col:IAppColumn,formSubmitted:boolea
          
         
       }
-   }; 
+   } 
   return (    
        <>
         {(props.col.fieldName&&(props.col.data === FieldType.Text||props.col.data === FieldType.Number)) && (
                 <TextField              
                 label={props.col.name} key={props.col.fieldName} onChange={onChange}   
-                // errorMessage={props.col.IsMandatory&&props.formSubmitted&&!props.fieldValue?"field is required":""}
-                errorMessage={props.error}
+                 errorMessage={props.error}
                 value={props.fieldValue}
-                required={props.col.IsMandatory}
+                className={props.col.IsMandatory?"required":""}
                  />
             )}
             {(props.col.data === FieldType.DateOnly || props.col.data === FieldType.DateAndTime) && (
-                <DatePicker  
-                
+                <DatePicker                  
                 ariaLabel="Select a date"
                 label={props.col.name} 
                 key={props.col.fieldName} 
@@ -90,14 +89,14 @@ export default function RenderControl(props:{col:IAppColumn,formSubmitted:boolea
                 formatDate={onFormatDate} 
                 strings={defaultDatePickerStrings}
                 isRequired={props.col.IsMandatory&&props.formSubmitted&&!props.fieldValue}
-              
+                className={props.col.IsMandatory?"required":""}
                  /> 
             )}
             {props.col.data === FieldType.TextArea && (
                 <TextField label={props.col.name} key={props.col.fieldName} onChange={onChange} rows={5} 
-                //  errorMessage={props.col.IsMandatory&&props.formSubmitted&&!props.fieldValue?"field is required":""}
                  required={props.col.IsMandatory}
                  errorMessage={props.error}
+                 className={props.col.IsMandatory?"required":""}
                  value={props.fieldValue} 
                 multiline />
             )}
@@ -111,6 +110,7 @@ export default function RenderControl(props:{col:IAppColumn,formSubmitted:boolea
                     options={(props.col as any)?.ranges}
                     errorMessage={props.col.IsMandatory&&props.formSubmitted&&!props.fieldValue?"field is required":""}
                     defaultSelectedKey={props.fieldValue} 
+                    className={props.col.IsMandatory?"required":""}
                 />
             )}
              {props.col.data === FieldType.MultiSelectDropdown && (
@@ -121,8 +121,8 @@ export default function RenderControl(props:{col:IAppColumn,formSubmitted:boolea
                     onChange={onChangeMultiDropDown}
                     required={props.col.IsMandatory}
                     errorMessage={props.error}
-                    // errorMessage={props.col.IsMandatory&&props.formSubmitted&&!props.fieldValue?"field is required":""}
-                    defaultSelectedKey={props.fieldValue} 
+                     defaultSelectedKey={props.fieldValue} 
+                    className={props.col.IsMandatory?"required":""}
                     multiSelect
                 />
             )}

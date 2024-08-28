@@ -7,13 +7,15 @@ import {
   Selection, 
   TextField,
   DatePicker,
-  Dropdown
+  Dropdown,
+  mergeStyles
 } from "@fluentui/react"; 
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { gridActions } from "../../store/feature/gridSlice";
-import { FieldType } from "../../models/servicesModel/attributeReponseDto";
+import GridCell from "./GridCellRender";
+import { GridFooter } from "./GridFooter";
 const onFormatDate = (date?: Date): string => {
   return !date ? '' : date.getDate() + '/' + (date.getMonth() + 1) + '/' + (date.getFullYear());
 };
@@ -23,6 +25,16 @@ export default function GridView() {
   const isEditingEnabled = useSelector((state: RootState) => state.grid.isEditingEnabled);
   const key = useSelector((state: RootState) => state.grid.selectedRowId);
   const dispatch = useDispatch();
+  const stickyHeaderStyles = mergeStyles({
+    selectors: {
+      '.ms-DetailsHeader': {
+        position: 'sticky',
+        top: 0,
+        zIndex: 1,
+        background: 'white', // Ensure background is set to avoid transparency
+      },
+    },
+  });
   const selection = new Selection({
     onSelectionChanged: () => {
       const selectedItems = selection.getSelection();
@@ -40,36 +52,39 @@ export default function GridView() {
 
      if(column?.fieldName){
       if(item.key==key&&isEditingEnabled){
-        if(column.data==FieldType.Text ||column.data===FieldType.TextArea || column.data==FieldType.Number)
-          return (
-            <TextField
-              defaultValue={item[column?.fieldName]}            
-            />
-          );
-          else if(column.data==FieldType.DateOnly)
-            return (
-              <DatePicker
-              formatDate={onFormatDate}
-                value={new Date(item[column?.fieldName])}
+        return <GridCell item={item} column={column as any}></GridCell>
+        // if(column.data==FieldType.Text ||column.data===FieldType.TextArea || column.data==FieldType.Number)
+        //   return (
+        //     <TextField
+        //       defaultValue={item[column?.fieldName]}            
+        //     />
+        //   );
+        //   else if(column.data==FieldType.DateOnly)
+        //     return (
+        //       <DatePicker
+        //       formatDate={onFormatDate}
+        //         value={new Date(item[column?.fieldName])}
               
-              />
-            );
-          else if(column.data==FieldType.Dropdown){
-            console.log('selectedKeys')
-            return (<Dropdown
-               placeholder="Select an option"            
-               options={ranges}
-               selectedKey={selectedKeys}
-               defaultValue={item[column?.fieldName]}
-               onChange={(e,item)=>{setSelectedKeys([item?.key])}}
-           />)
-          }
+        //       />
+        //     );
+        //   else if(column.data==FieldType.Dropdown){
+        //     console.log('selectedKeys')
+        //     return (<Dropdown
+        //        placeholder="Select an option"            
+        //        options={ranges}
+        //        selectedKey={selectedKeys}
+        //        defaultValue={item[column?.fieldName]}
+        //        onChange={(e,item)=>{setSelectedKeys([item?.key])}}
+        //    />)
+        //   }
       }
       return <div>{item[column?.fieldName]}</div>
     }
       
   },[isEditingEnabled])
   return (   
+    <div className={stickyHeaderStyles} style={{maxHeight:'400px',overflow:'auto'}}>
+
       <DetailsList
         items={rows}
         columns={columns}
@@ -80,5 +95,7 @@ export default function GridView() {
         constrainMode={ConstrainMode.horizontalConstrained}
         onRenderItemColumn={_renderItemColumn}      
       ></DetailsList>
+   
+      </div>
    );
 }

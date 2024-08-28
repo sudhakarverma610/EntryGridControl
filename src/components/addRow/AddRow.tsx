@@ -51,8 +51,9 @@ export default function AppRow(prop:{service:PCFWebAPI}) {
       if(rowNumber||rowNumber==0){
         var dataToSentToServer={
           ...dataToSent,
-          rowNo:rowNumber.toString()
-        };
+                  };
+        if(rowNumber!==0)
+          dataToSentToServer.rowNo=rowNumber.toString()
         console.log('data sending to Dataverse',dataToSentToServer);
         if(context.parameters.DmPlanId.raw)
          saveDmRecord(prop.service,context.parameters.DmPlanId.raw,[dataToSentToServer]).then(it=>{

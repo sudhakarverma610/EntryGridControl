@@ -62,7 +62,6 @@ export const mapColumn=(headers:any[])=>{
   }
    
   export const mapRows=(data:{columns:any[], rows:any[]})=>{  
-   // console.log('mapper0')
     var allkeys=data.columns.map(it=>it.Name);
     return data.rows.map(row=>{
         var newRow:any={

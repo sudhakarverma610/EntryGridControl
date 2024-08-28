@@ -4,47 +4,63 @@ import { counterActions } from "../store/feature/counterSlice";
 import Header from "./header/Header";
 import GridView from "./gridView/GridView";
 import { gridActions } from "../store/feature/gridSlice";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { PCFWebAPI } from "../services/DataverseService";
 import { deletRowsDmRecord, getDmRecord } from "../services/DMPlanService";
 import { mapColumn, mapRows } from "../mappers/mapToColumn";
 import AppRow from "./addRow/AddRow";
 import { config } from "process";
 import { Config, Environment } from "../config";
+import { GridFooter } from "./gridView/GridFooter";
  
+const PageSize=5;
 export default function App(props:{service:PCFWebAPI}) {
+  
   const count = useSelector((state: RootState) => state.counter.value);
   const maxKeyNumber = useSelector((state: RootState) => state.grid.maxRowCount);
   const selectedRowId = useSelector((state: RootState) => state.grid.selectedRowId);
   const dialogClosed = useSelector((state: RootState) => state.grid.onClickOfNewRow);
   const formData = useSelector((state: RootState) => state.grid.addNewForm);
   const dispatch = useDispatch();  
-  const platId="7c19a6d2-7f4d-ef11-accd-000d3ab866c9";
-  const loadEntryToDMPlan=(id:string)=>{
-    getDmRecord(props.service,id,true).then(it=>{
+  const [firstTime,setFirstTime]=useState(false);  
+  const [currentColumns,setcurrentColumns]=useState([])
+  const [currentPage,setCurrentPage]=useState(1);
+  const [isMoreRecords,SetIsMoreRecord]=useState(false)
+  const loadEntryToDMPlan=(id:string,header:boolean,page:number,size:number)=>{
+    var Xrm= (window as any).Xrm;
+    Xrm?.Utility?.showProgressIndicator("Processing...") 
+    getDmRecord(props.service,id,header,page,size).then(it=>{
       console.log('action res',it);
-      let columns=mapColumn(it.Header);
-      dispatch(gridActions.setColumns(columns));      
-      dispatch(gridActions.setRows(mapRows({columns:it.Header,rows:it.Attributes})));      
+      Xrm?.Utility?.closeProgressIndicator()
+      if(it){
+        var headers=currentColumns;
+        if(it?.Header){
+          setcurrentColumns(it.Header)
+        }else{
+          headers=it.Header;
+        }
+        if(header){
+          let columns=mapColumn(it.Header);        
+          console.log('columns',columns)
+          dispatch(gridActions.setColumns(columns));
+        }      
+        dispatch(gridActions.setRows(mapRows({columns:it.Header,rows:it.Attributes})));  
+        setFirstTime(true);    
+        if(it?.PageMeta)
+            SetIsMoreRecord(it?.PageMeta?.IsMoreRecords)
+      }else{
+        if(!firstTime)
+        dispatch(gridActions.setColumns([]));      
+        dispatch(gridActions.setRows([]));  
+      }
+      
     })    
   }
   useEffect(()=>{
     console.log('formData',formData,dialogClosed)
   },[dialogClosed])
-  const onClickMe = () => {
-    dispatch(counterActions.increment());
-  };
-  const AddNewRow=()=>{
-    let dataToCreate={
-      "key": maxKeyNumber.toString(),
-      "name": "Lorem ipsum.audio-"+maxKeyNumber,
-      "fileType": "audio",
-      "modifiedBy": "Dolor Sit",
-      "dateModified": "4/6/2017",
-      "dateModifiedValue": 1496544984102,
-      "fileSize": "36 KB",
-      "fileSizeRaw": 36
-  }
+
+  const AddNewRow=()=>{     
      dispatch(gridActions.initialForm());
      dispatch(gridActions.addNewRow(true))
   }
@@ -72,7 +88,8 @@ const refreshButtonHandler=()=>{
   console.log('refreshButtonHandler');
   var id=props.service.getContext()?.parameters?.DmPlanId?.raw;
   if(id)
-    loadEntryToDMPlan(id);
+    loadEntryToDMPlan(id,true,1,PageSize);
+
      
 
 }
@@ -80,7 +97,7 @@ const refreshButtonHandler=()=>{
     var id=props.service.getContext()?.parameters?.DmPlanId?.raw;
     console.log(id);
     if(isGuid(id)&&id)
-      loadEntryToDMPlan(id);
+      loadEntryToDMPlan(id,true,1,PageSize);
   },[props.service.getContext()?.parameters?.DmPlanId?.raw])
   useEffect(()=>{
     if(Config.Environment== Environment.Local)
@@ -89,6 +106,13 @@ const refreshButtonHandler=()=>{
     })
   },[]);
 
+
+  const onChangePage=(page:number)=>{
+    setCurrentPage(page);
+    var id=props.service.getContext()?.parameters?.DmPlanId?.raw;
+    if(id)
+      loadEntryToDMPlan(id,false,page,PageSize);
+  }
    return (
     <>
       <Header
@@ -107,6 +131,7 @@ const refreshButtonHandler=()=>{
       }
       
       <GridView/>
+      <GridFooter setCurrentPage={onChangePage} currentPage={currentPage} isLastPage={!isMoreRecords} />
     </>
   );
 }
