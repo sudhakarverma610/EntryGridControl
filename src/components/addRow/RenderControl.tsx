@@ -5,11 +5,24 @@ import { FieldType } from "../../models/servicesModel/attributeReponseDto";
 import { useState } from "react";
 import './RenderControl.css';
 
-export default function RenderControl(props:{col:IAppColumn,formSubmitted:boolean,fieldValue:any,error:any,
+export default function RenderControl(props:{col:IAppColumn,formSubmitted:boolean,fieldValue:string,error:any,
   onFormValueChange:any}) {
     const dispatch = useDispatch(); 
     const [selectedKeys, setSelectedKeys] = useState<string[]>([]); 
- 
+     const parseDate = (dateString: string) => {
+      if (dateString) {
+        const [day, month, year] = dateString.split("."); // Split the string by '.'
+        const date = new Date(`${year}-${month}-${day}`);
+        return date;
+      }
+      return undefined;
+    };
+    const getFormatedValue=(value:string)=>{
+      
+      var returnValue= value?.split(';');
+      console.log('getFormatedValue',returnValue)
+      return returnValue;
+    }
 
     const onChange=(event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, newValue?: string)=>{
         console.log('new Value',newValue);
@@ -84,7 +97,7 @@ export default function RenderControl(props:{col:IAppColumn,formSubmitted:boolea
                 ariaLabel="Select a date"
                 label={props.col.name} 
                 key={props.col.fieldName} 
-                value={props.fieldValue} 
+                value={parseDate(props.fieldValue)} 
                 onSelectDate={onSelectDate}
                 formatDate={onFormatDate} 
                 strings={defaultDatePickerStrings}
@@ -117,11 +130,11 @@ export default function RenderControl(props:{col:IAppColumn,formSubmitted:boolea
                 <Dropdown
                     label={props.col.name}
                     placeholder={`Select an ${props.col.name}`}
+                    defaultSelectedKeys={getFormatedValue(props.fieldValue)}  
                     options={(props.col as any)?.ranges}
                     onChange={onChangeMultiDropDown}
                     required={props.col.IsMandatory}
                     errorMessage={props.error}
-                     defaultSelectedKey={props.fieldValue} 
                     className={props.col.IsMandatory?"required":""}
                     multiSelect
                 />

@@ -12,7 +12,6 @@ export class AttributeGrid implements ComponentFramework.StandardControl<IInputs
     private _container: HTMLDivElement;
     private _root: Root;
     private _store: Store;
-    private rowNumber=0;
     private _notifyOutputChanged: () => void;
     /**
      * Empty constructor.
@@ -45,8 +44,7 @@ export class AttributeGrid implements ComponentFramework.StandardControl<IInputs
      */
     public updateView(context: ComponentFramework.Context<IInputs>): void
     {
-        this.rowNumber=context.parameters.RowNumber.raw??0;
-        this._root.render(
+         this._root.render(
             createElement(AppProvider, 
             {
                 store:this._store,
@@ -67,8 +65,8 @@ export class AttributeGrid implements ComponentFramework.StandardControl<IInputs
         };
     }
     public updateRowNumber = (newValue: number) => {
-        this.rowNumber = newValue;
-        this._notifyOutputChanged(); // Notify the framework that the value has changed
+        
+       // this._notifyOutputChanged(); // Notify the framework that the value has changed
     };
     /**
      * Called when the control is to be removed from the DOM tree. Controls should use this call for cleanup.

@@ -84,7 +84,6 @@ export default function GridView() {
   },[isEditingEnabled])
   return (   
     <div className={stickyHeaderStyles} style={{maxHeight:'400px',overflow:'auto'}}>
-
       <DetailsList
         items={rows}
         columns={columns}

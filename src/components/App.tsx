@@ -12,20 +12,22 @@ import AppRow from "./addRow/AddRow";
 import { config } from "process";
 import { Config, Environment } from "../config";
 import { GridFooter } from "./gridView/GridFooter";
+import EditRow from "./addRow/EditRow";
  
 const PageSize=5;
 export default function App(props:{service:PCFWebAPI}) {
   
-  const count = useSelector((state: RootState) => state.counter.value);
-  const maxKeyNumber = useSelector((state: RootState) => state.grid.maxRowCount);
   const selectedRowId = useSelector((state: RootState) => state.grid.selectedRowId);
   const dialogClosed = useSelector((state: RootState) => state.grid.onClickOfNewRow);
   const formData = useSelector((state: RootState) => state.grid.addNewForm);
+  const selectedRow=useSelector((state: RootState) => state.grid.rows.find(it=>it.key==selectedRowId));
   const dispatch = useDispatch();  
   const [firstTime,setFirstTime]=useState(false);  
   const [currentColumns,setcurrentColumns]=useState([])
   const [currentPage,setCurrentPage]=useState(1);
   const [isMoreRecords,SetIsMoreRecord]=useState(false)
+  const [dialogEditOpen,SetdialogEditOpen]=useState(false)
+  const [editFormData,SeteditFormData]=useState<any>({})
   const loadEntryToDMPlan=(id:string,header:boolean,page:number,size:number)=>{
     var Xrm= (window as any).Xrm;
     Xrm?.Utility?.showProgressIndicator("Processing...") 
@@ -57,7 +59,8 @@ export default function App(props:{service:PCFWebAPI}) {
     })    
   }
   useEffect(()=>{
-    console.log('formData',formData,dialogClosed)
+    console.log('formData',formData,dialogClosed);
+
   },[dialogClosed])
 
   const AddNewRow=()=>{     
@@ -65,8 +68,16 @@ export default function App(props:{service:PCFWebAPI}) {
      dispatch(gridActions.addNewRow(true))
   }
   const onEditClick=()=>{
-    dispatch(gridActions.setEditable())
-  }
+    SetdialogEditOpen(true)
+    console.log('selectedRow',selectedRow)
+    if(selectedRow){
+      var formValue:any={};
+      Object.keys(selectedRow).forEach(key=>{
+        formValue[key]={value:selectedRow[key]?.toString(),error:''}
+      })
+      SeteditFormData(formValue)
+    }
+   }
   const isGuid=(str:string|null)=> {
     if(!str)
       return false;
@@ -77,9 +88,9 @@ const deleteButtonHandler=()=>{
   console.log('deleteButtonHandler',selectedRowId);
   var id=props.service.getContext()?.parameters?.DmPlanId?.raw;
   if(id&&selectedRowId)
-    deletRowsDmRecord(props.service,id,[selectedRowId]).then(it=>{
+    deletRowsDmRecord(props.service,id,[selectedRowId]).then(()=>{
     dispatch(gridActions.deleteRow(selectedRowId))
-  },(err)=>{
+  },()=>{
     console.log('an error occure while deleting')
   })
 
@@ -88,10 +99,7 @@ const refreshButtonHandler=()=>{
   console.log('refreshButtonHandler');
   var id=props.service.getContext()?.parameters?.DmPlanId?.raw;
   if(id)
-    loadEntryToDMPlan(id,true,1,PageSize);
-
-     
-
+    loadEntryToDMPlan(id,true,1,PageSize); 
 }
   useEffect(()=>{
     var id=props.service.getContext()?.parameters?.DmPlanId?.raw;
@@ -128,8 +136,10 @@ const refreshButtonHandler=()=>{
       ></Header>
       { dialogClosed &&
         <AppRow service={props.service}/>
-      }
-      
+      }   
+      {dialogEditOpen &&
+        <EditRow service={props.service} formValue={editFormData}  close={()=>{SetdialogEditOpen(false)}}/>
+      }      
       <GridView/>
       <GridFooter setCurrentPage={onChangePage} currentPage={currentPage} isLastPage={!isMoreRecords} />
     </>

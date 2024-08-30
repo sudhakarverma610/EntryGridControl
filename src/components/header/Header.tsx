@@ -40,17 +40,8 @@ export default function Header(props:IHeaderProps) {
       onClick: props.refreshButtonHandler,
     },
     
-    {
-      order: 4,
-      text: 'Save',
-      icon: saveIcon,
-      disabled:false,
-      onClick: props.saveButtonHandler,
-      styles: {
-        icon: { color: 'blue' },
-        textContainer: { color: 'blue' },
-      },
-    },
+     
+  
   ];
   const buttonWithEdit: ButtonProps[] = [
     {
@@ -84,18 +75,7 @@ export default function Header(props:IHeaderProps) {
         root: { display: props.selectedCount > 0 ? 'flex' : 'none' },
         icon: { color: 'black' },
       },
-    },
-    {
-      order: 5,
-      text: 'Save',
-      icon: saveIcon,
-      disabled:false,
-      onClick: props.saveButtonHandler,
-      styles: {
-        icon: { color: 'blue' },
-        textContainer: { color: 'blue' },
-      },
-    },
+    }
   ];
      const [buttons,setButton] =useState<ButtonProps[]>(buttonWithoutEdit);
       useEffect(()=>{        

@@ -4,7 +4,7 @@ export enum Environment{
 }
 export class Config { 
     public static serverUrl = 'https://cmml.crm4.dynamics.com/';//Trail Local   
-    public static Environment=Environment.Local; 
+    public static Environment=Environment.Prod; 
     public static ConsoleEnabled=true;
     public static refreshTimeInSecound=10;
     public static appVersion="v5.2.0";

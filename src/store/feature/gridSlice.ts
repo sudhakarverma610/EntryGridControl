@@ -44,6 +44,16 @@ export const gridSlice = createSlice({
         console.log('setRows',action.payload)
         state.maxRowCount=Math.max(...state.rows.map(it=>+it.key)) + 1;
       },
+      updateRow: (state,action:PayloadAction<any>) => {     
+        if(!state.rows)
+          state.rows=[];
+        var currentRow=state.rows.find(it=>it.key==action.payload.key);
+        if(currentRow){
+          Object.keys(currentRow).forEach(key=>{
+            currentRow[key]=action.payload[key]
+          })
+        } 
+      },
       deleteRow: (state,action:PayloadAction<any>) => {  
         state.rows=state.rows.filter(it=>it.rowNo!==action.payload)
         state.maxRowCount=Math.max(...state.rows.map(it=>+it.key)) + 1;

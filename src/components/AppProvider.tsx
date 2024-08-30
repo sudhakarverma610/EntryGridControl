@@ -1,8 +1,6 @@
-import { Provider, useDispatch } from "react-redux";
-import { store } from "../store/store";
+import { Provider } from "react-redux";
 import App from "./App";
 import { Store } from "../models/store";
-import { IInputs } from "../../AttributeGrid/generated/ManifestTypes";
 import { PCFWebAPI } from "../services/DataverseService";
 
 

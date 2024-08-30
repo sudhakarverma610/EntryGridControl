@@ -9,14 +9,14 @@ import { gridActions } from "../../store/feature/gridSlice";
 import { PCFWebAPI } from "../../services/DataverseService";
 import { saveDmRecord } from "../../services/DMPlanService";
 
-export default function AppRow(prop:{service:PCFWebAPI}) {
-    const isAddEnabled = useSelector((state: RootState) => state.grid.onClickOfNewRow);
+export default function EditRow(prop:{service:PCFWebAPI,formValue:any,close:()=>void}) {
+    const isAddEnabled =true;
     const columns = useSelector((state: RootState) => state.grid.columns);
     const formValueSelector = useSelector((state: RootState) => state.grid.addNewForm);
     const [isOpen, { setTrue: openPanel, setFalse: dismissPanel }] = useBoolean(false);
     const [formSubmitted,setFormSubmitted] = useState(false);
-    const [addRowForm, setAddRowForm] = useState<any>({});
-    const dispatch = useDispatch();       
+    const [addRowForm, setAddRowForm] = useState<any>(prop.formValue);
+    const dispatch = useDispatch();     
     useEffect(()=>{
         console.log('isAddEnabled',isAddEnabled)
         if(isAddEnabled)
@@ -26,9 +26,9 @@ export default function AppRow(prop:{service:PCFWebAPI}) {
         }
     },[isAddEnabled]);
     const onclose=()=>{
-      dispatch(gridActions.addNewRow(false))
-      dismissPanel();
- 
+     // dispatch(gridActions.addNewRow(false));
+      prop.close()
+      dismissPanel(); 
     }
    ;
     const handleSubmit=(event:any)=>{    
@@ -52,11 +52,8 @@ export default function AppRow(prop:{service:PCFWebAPI}) {
         console.log('data sending to Dataverse',dataToSentToServer);
         if(context.parameters.DmPlanId.raw)
          saveDmRecord(prop.service,context.parameters.DmPlanId.raw,[dataToSentToServer]).then(it=>{
-            console.log('Row Added',it);
-            //prop.service.updateRowNumber(rowNumber+1);
-            dataToSentToServer.rowNo=it.Data;
-            dispatch(gridActions.insertNewRow(dataToSentToServer));                
-            dispatch(gridActions.addNewRow(false))
+            console.log('Row Added',it);            
+            dispatch(gridActions.updateRow(dataToSentToServer));            
             dismissPanel(); 
             })  
       } 
