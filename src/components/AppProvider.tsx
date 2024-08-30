@@ -13,7 +13,7 @@ export default function AppProvider(props:IAppProps) {
   
   return (
     <Provider store={props.store}> 
-      <App service={props.service} /> 
+      <App service={props.service}  /> 
     </Provider>
   );
 }

@@ -122,7 +122,7 @@ const refreshButtonHandler=()=>{
       loadEntryToDMPlan(id,false,page,PageSize);
   }
    return (
-    <>
+    <div className="EntryGridContainer" style={{width:"calc(100% - 20px)"}}>
       <Header
         refreshButtonHandler={() => {refreshButtonHandler()}}
         saveButtonHandler={() => {}}
@@ -142,6 +142,6 @@ const refreshButtonHandler=()=>{
       }      
       <GridView/>
       <GridFooter setCurrentPage={onChangePage} currentPage={currentPage} isLastPage={!isMoreRecords} />
-    </>
+    </div>
   );
 }

@@ -53,7 +53,8 @@ export default function EditRow(prop:{service:PCFWebAPI,formValue:any,close:()=>
         if(context.parameters.DmPlanId.raw)
          saveDmRecord(prop.service,context.parameters.DmPlanId.raw,[dataToSentToServer]).then(it=>{
             console.log('Row Added',it);            
-            dispatch(gridActions.updateRow(dataToSentToServer));            
+            dispatch(gridActions.updateRow(dataToSentToServer));   
+            prop.close();         
             dismissPanel(); 
             })  
       } 
