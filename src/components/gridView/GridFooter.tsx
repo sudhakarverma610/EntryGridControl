@@ -1,8 +1,5 @@
-import * as React from 'react';
 import { IconButton } from '@fluentui/react/lib/Button';
- import { BackIcon, footerButtonStyles, footerStyles,
-  ForwardIcon, PreviousIcon } from '../../styles/FooterStyles';
-import { useState } from 'react';
+import { BackIcon, footerButtonStyles, footerStyles,ForwardIcon, PreviousIcon } from '../../styles/FooterStyles';
 
  
 export interface IGridFooterProps {

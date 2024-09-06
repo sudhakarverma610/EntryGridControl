@@ -5,17 +5,13 @@ import {
   IColumn,
   SelectionMode, 
   Selection, 
-  TextField,
-  DatePicker,
-  Dropdown,
   mergeStyles
 } from "@fluentui/react"; 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { gridActions } from "../../store/feature/gridSlice";
 import GridCell from "./GridCellRender";
-import { GridFooter } from "./GridFooter";
 const onFormatDate = (date?: Date): string => {
   return !date ? '' : date.getDate() + '/' + (date.getMonth() + 1) + '/' + (date.getFullYear());
 };
@@ -53,37 +49,14 @@ export default function GridView() {
      if(column?.fieldName){
       if(item.key==key&&isEditingEnabled){
         return <GridCell item={item} column={column as any}></GridCell>
-        // if(column.data==FieldType.Text ||column.data===FieldType.TextArea || column.data==FieldType.Number)
-        //   return (
-        //     <TextField
-        //       defaultValue={item[column?.fieldName]}            
-        //     />
-        //   );
-        //   else if(column.data==FieldType.DateOnly)
-        //     return (
-        //       <DatePicker
-        //       formatDate={onFormatDate}
-        //         value={new Date(item[column?.fieldName])}
-              
-        //       />
-        //     );
-        //   else if(column.data==FieldType.Dropdown){
-        //     console.log('selectedKeys')
-        //     return (<Dropdown
-        //        placeholder="Select an option"            
-        //        options={ranges}
-        //        selectedKey={selectedKeys}
-        //        defaultValue={item[column?.fieldName]}
-        //        onChange={(e,item)=>{setSelectedKeys([item?.key])}}
-        //    />)
-        //   }
+        
       }
       return <div>{item[column?.fieldName]}</div>
     }
       
   },[isEditingEnabled])
   return (   
-    <div className={stickyHeaderStyles} style={{maxHeight:'400px',overflow:'auto'}}>
+    <div className={stickyHeaderStyles} style={{overflow:'auto'}}>
       <DetailsList
         items={rows}
         columns={columns}
