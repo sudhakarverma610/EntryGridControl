@@ -173,6 +173,7 @@ interface IRequest{
         }
         var response = fetch(this._baseAPiURL + url, requestOptions);
         var it = await response;
+        console.log('response',it)
         if (it.status == 401) {
             var token = await this.getToken();
             localStorage.setItem("token", token.token);

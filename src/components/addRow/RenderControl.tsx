@@ -1,14 +1,12 @@
 import { DatePicker, defaultDatePickerStrings, Dropdown, IDropdownOption, TextField } from "@fluentui/react";
-import { useDispatch } from "react-redux";
 import { IAppColumn } from "../../models/column";
 import { FieldType } from "../../models/servicesModel/attributeReponseDto";
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import './RenderControl.css';
 
 export default function RenderControl(props:{col:IAppColumn,formSubmitted:boolean,fieldValue:string,error:any,
   onFormValueChange:any}) {
-    const dispatch = useDispatch(); 
-    const [selectedKeys, setSelectedKeys] = useState<string[]>([]); 
+    const [selectedKeys, setSelectedKeys] = useState<string[]>(props.col.data === FieldType.MultiSelectDropdown?props.fieldValue?.split(';'):[]); 
      const parseDate = (dateString: string) => {
       if (dateString) {
         const [day, month, year] = dateString.split("."); // Split the string by '.'
@@ -24,7 +22,7 @@ export default function RenderControl(props:{col:IAppColumn,formSubmitted:boolea
       return returnValue;
     }
 
-    const onChange=(event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, newValue?: string)=>{
+    const onChange=(event: FormEvent<HTMLInputElement | HTMLTextAreaElement>, newValue?: string)=>{
         console.log('new Value',newValue);
         if(!newValue)
             newValue="";
@@ -56,7 +54,7 @@ export default function RenderControl(props:{col:IAppColumn,formSubmitted:boolea
       return "";
     };
 
-    const onChangeSingDropDown = (event: React.FormEvent<HTMLDivElement>, option?: IDropdownOption, index?: number) => {
+    const onChangeSingDropDown = (event: FormEvent<HTMLDivElement>, option?: IDropdownOption, index?: number) => {
        console.log('option',option);
        if(props.col.fieldName&&option){
         let fieldname=props.col.fieldName;
@@ -67,14 +65,15 @@ export default function RenderControl(props:{col:IAppColumn,formSubmitted:boolea
        }       
        
     };
-    const onChangeMultiDropDown = (event: React.FormEvent<HTMLDivElement>, option?: IDropdownOption, index?: number) => {
+    const onChangeMultiDropDown = (event: FormEvent<HTMLDivElement>, option?: IDropdownOption, index?: number) => {
       console.log('option',option);
       if (option) {
         let keys= option.selected ? [...selectedKeys, option.key as string] : selectedKeys.filter(key => key !== option.key);
-        setSelectedKeys(keys);
+        var newKeys=(props.col as any).ranges.filter((it:any)=>keys.includes(it.key)).map((it:any)=>it.key)
+        setSelectedKeys(newKeys);
         if(props.col.fieldName){
           let fieldname=props.col.fieldName;
-          var newValue=keys.join(";");
+          var newValue=newKeys.join(";");
           var error=props.col.IsMandatory&&props.formSubmitted&&!newValue?"field is required":"";
           props.onFormValueChange((values:any)  => ({...values, [fieldname]: {value: newValue,error:error}}));          
         }
@@ -136,6 +135,7 @@ export default function RenderControl(props:{col:IAppColumn,formSubmitted:boolea
                     required={props.col.IsMandatory}
                     errorMessage={props.error}
                     className={props.col.IsMandatory?"required":""}
+                    selectedKeys={selectedKeys}
                     multiSelect
                 />
             )}

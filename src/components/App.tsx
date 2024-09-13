@@ -108,7 +108,7 @@ const refreshButtonHandler=()=>{
       loadEntryToDMPlan(id,true,1,PageSize);
   },[props.service.getContext()?.parameters?.DmPlanId?.raw])
   useEffect(()=>{
-    if(Config.Environment== Environment.Local)
+    //if(Config.Environment== Environment.Local)
     props.service.retrieveMultipleRecords("account","?$top=1&$select=accountid").then(it=>{
       console.log('it',it)
     })
