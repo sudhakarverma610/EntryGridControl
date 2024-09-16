@@ -12,15 +12,28 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { gridActions } from "../../store/feature/gridSlice";
 import GridCell from "./GridCellRender";
-const onFormatDate = (date?: Date): string => {
-  return !date ? '' : date.getDate() + '/' + (date.getMonth() + 1) + '/' + (date.getFullYear());
-};
-export default function GridView() { 
-  const columns = useSelector((state: RootState) => state.grid.columns);
+export default function GridView(props:{
+  handleColumnClick: (ev: any, col: any) => void
+}) { 
+
+  const columns = useSelector((state: RootState) => {
+    const columnsWithClickHandler = state.grid.columns.map(column => ({
+      ...column,
+      onColumnClick: (ev: any, col: any) => handleColumnClick(ev, col), // Add onColumnClick dynamically
+    }));
+    return columnsWithClickHandler;
+  }
+  );
+  
   const rows = useSelector((state: RootState) => state.grid.rows);
   const isEditingEnabled = useSelector((state: RootState) => state.grid.isEditingEnabled);
   const key = useSelector((state: RootState) => state.grid.selectedRowId);
   const dispatch = useDispatch();
+
+  const  handleColumnClick=(ev: any, col: any)=> {  
+          props.handleColumnClick(ev,col)
+  }
+  
   const stickyHeaderStyles = mergeStyles({
     selectors: {
       '.ms-DetailsHeader': {
@@ -57,7 +70,7 @@ export default function GridView() {
   },[isEditingEnabled])
   return (   
     <div className={stickyHeaderStyles} style={{overflow:'auto'}}>
-      <DetailsList
+      <DetailsList       
         items={rows}
         columns={columns}
         setKey="set"
@@ -71,3 +84,4 @@ export default function GridView() {
       </div>
    );
 }
+

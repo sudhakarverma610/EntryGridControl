@@ -25,8 +25,7 @@ export default function EditRow(prop:{service:PCFWebAPI,formValue:any,close:()=>
           dismissPanel();
         }
     },[isAddEnabled]);
-    const onclose=()=>{
-     // dispatch(gridActions.addNewRow(false));
+    const onclose=()=>{ 
       prop.close()
       dismissPanel(); 
     }

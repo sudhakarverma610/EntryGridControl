@@ -44,20 +44,24 @@ export const getAttributes = async (
   }
   return response;
 }; 
-export const getDmRecord=async (service: PCFWebAPI,planId:string, headerRequired:boolean,page:number,size:number)=>{
+export const getDmRecord=async (service: PCFWebAPI,planId:string, headerRequired:boolean,page:number,size:number,sortField:string|undefined,sortBy:boolean)=>{
   var req = {
     // Parameters
     entity: { entityType: "cm_dm_plan", id: planId }, // entity
     HeaderRequired: headerRequired, // Edm.Boolean
     Page: page, // Edm.Boolean
-    Size: size, // Edm.Boolean
+    Size: size, // Edm.Booleanxrm
+    SortField: sortField, // Edm.Booleanxrm
+    SortBy: sortBy, // Edm.Booleanxrm
   
     getMetadata: function () {
       return {
         boundParameter: "entity",
         parameterTypes: {
           entity: { typeName: "mscrm.cm_dm_plan", structuralProperty: 5 },
-          HeaderRequired: { typeName: "Edm.Boolean", structuralProperty: 1 }
+          HeaderRequired: { typeName: "Edm.Boolean", structuralProperty: 1 },
+          SortField: { typeName: "Edm.String", structuralProperty: 1 },
+          SortBy: { typeName: "Edm.Boolean", structuralProperty: 1 }
         },
         operationType: 0, operationName: "cm_ActionDMPlanGetAttributeList"
       };

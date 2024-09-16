@@ -68,9 +68,17 @@ export default function RenderControl(props:{col:IAppColumn,formSubmitted:boolea
     const onChangeMultiDropDown = (event: FormEvent<HTMLDivElement>, option?: IDropdownOption, index?: number) => {
       console.log('option',option);
       if (option) {
-        let keys= option.selected ? [...selectedKeys, option.key as string] : selectedKeys.filter(key => key !== option.key);
-        var newKeys=(props.col as any).ranges.filter((it:any)=>keys.includes(it.key)).map((it:any)=>it.key)
-        setSelectedKeys(newKeys);
+        var newKeys;
+        if(!selectedKeys){
+          let keys= option.selected ? [[], option.key as string] : [].filter(key => key !== option.key);
+          newKeys=(props.col as any).ranges.filter((it:any)=>keys.includes(it.key)).map((it:any)=>it.key)
+          setSelectedKeys(newKeys);
+        }else{
+          let keys= option.selected ? [...selectedKeys, option.key as string] : selectedKeys.filter(key => key !== option.key);
+          newKeys=(props.col as any).ranges.filter((it:any)=>keys.includes(it.key)).map((it:any)=>it.key)
+          setSelectedKeys(newKeys);
+        }
+     
         if(props.col.fieldName){
           let fieldname=props.col.fieldName;
           var newValue=newKeys.join(";");

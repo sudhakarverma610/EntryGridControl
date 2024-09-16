@@ -1,6 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store";
-import { counterActions } from "../store/feature/counterSlice";
 import Header from "./header/Header";
 import GridView from "./gridView/GridView";
 import { gridActions } from "../store/feature/gridSlice";
@@ -9,10 +8,9 @@ import { PCFWebAPI } from "../services/DataverseService";
 import { deletRowsDmRecord, getDmRecord } from "../services/DMPlanService";
 import { mapColumn, mapRows } from "../mappers/mapToColumn";
 import AppRow from "./addRow/AddRow";
-import { config } from "process";
-import { Config, Environment } from "../config";
 import { GridFooter } from "./gridView/GridFooter";
 import EditRow from "./addRow/EditRow";
+import { IColumn } from "@fluentui/react";
  
 const PageSize=5;
 export default function App(props:{service:PCFWebAPI}) {
@@ -28,10 +26,24 @@ export default function App(props:{service:PCFWebAPI}) {
   const [isMoreRecords,SetIsMoreRecord]=useState(false)
   const [dialogEditOpen,SetdialogEditOpen]=useState(false)
   const [editFormData,SeteditFormData]=useState<any>({})
+  const [sortedColumnKey, setSortedColumnKey] = useState<string | undefined>(undefined);
+  const [isSortedDescending, setIsSortedDescending] = useState<boolean>(false);
+
+  // eslint-disable-next-line no-undef
+  const handleColumnClick = (ev: React.MouseEvent<HTMLElement>, column: IColumn) => {
+    const isSortedDescendingLocal = column.key === sortedColumnKey ? !isSortedDescending : false; 
+    console.log('sort column field name',column.fieldName)
+    console.log('sort column by',isSortedDescendingLocal)
+    setSortedColumnKey(column.fieldName);
+    setIsSortedDescending(isSortedDescendingLocal);
+    var id=props.service.getContext()?.parameters?.DmPlanId?.raw;
+    if(id)
+      loadEntryToDMPlan(id,false,currentPage,PageSize);
+    };
   const loadEntryToDMPlan=(id:string,header:boolean,page:number,size:number)=>{
     var Xrm= (window as any).Xrm;
     Xrm?.Utility?.showProgressIndicator("Processing...") 
-    getDmRecord(props.service,id,header,page,size).then(it=>{
+    getDmRecord(props.service,id,header,page,size,sortedColumnKey,isSortedDescending).then(it=>{
       console.log('action res',it);
       Xrm?.Utility?.closeProgressIndicator()
       if(it){
@@ -42,7 +54,7 @@ export default function App(props:{service:PCFWebAPI}) {
           headers=it.Header;
         }
         if(header){
-          let columns=mapColumn(it.Header);        
+          let columns=mapColumn(it.Header,sortedColumnKey,isSortedDescending);        
           console.log('columns',columns)
           dispatch(gridActions.setColumns(columns));
         }      
@@ -121,6 +133,7 @@ const refreshButtonHandler=()=>{
     if(id)
       loadEntryToDMPlan(id,false,page,PageSize);
   }
+ 
    return (
     <div className="EntryGridContainer" style={{width:"calc(100% - 20px)"}}>
       <Header
@@ -140,7 +153,7 @@ const refreshButtonHandler=()=>{
       {dialogEditOpen &&
         <EditRow service={props.service} formValue={editFormData}  close={()=>{SetdialogEditOpen(false)}}/>
       }      
-      <GridView/>
+      <GridView  handleColumnClick={handleColumnClick}/>
       <GridFooter setCurrentPage={onChangePage} currentPage={currentPage} isLastPage={!isMoreRecords} />
     </div>
   );
