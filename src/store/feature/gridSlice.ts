@@ -92,7 +92,32 @@ export const gridSlice = createSlice({
       if(!state.selectedRowId)
          state.isEditingEnabled=undefined;
      },
-     
+     sortRows: (state, action: PayloadAction<{ field: string, isSortedDescending:boolean |undefined}>) => {
+      const { field, isSortedDescending } = action.payload;
+      state.rows = [...state.rows].sort((a, b) => {
+        if (!isSortedDescending) {
+          return a[field] > b[field] ? 1 : -1;
+        } else {
+          return a[field] < b[field] ? 1 : -1;
+        }
+
+      });
+      if (field) {
+        // Reset sorting metadata for all columns
+        state.columns.forEach(col => {
+          col.isSorted = false;
+          col.isSortedDescending = undefined;
+        });
+
+        // Find the column being sorted and set its sorting state
+        const sortableColumn = state.columns.find(col => col.fieldName === field);
+        if (sortableColumn) {
+          sortableColumn.isSorted = true;
+          sortableColumn.isSortedDescending = !isSortedDescending;
+        }
+      }
+    }
+  
 
     },
 })

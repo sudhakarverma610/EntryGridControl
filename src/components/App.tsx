@@ -35,10 +35,11 @@ export default function App(props:{service:PCFWebAPI}) {
     console.log('sort column field name',column.fieldName)
     console.log('sort column by',isSortedDescendingLocal)
     setSortedColumnKey(column.fieldName);
-    setIsSortedDescending(isSortedDescendingLocal);
-    var id=props.service.getContext()?.parameters?.DmPlanId?.raw;
-    if(id)
-      loadEntryToDMPlan(id,false,currentPage,PageSize);
+    if(column.isSortedDescending)
+    setIsSortedDescending(column.isSortedDescending);
+     if(column.fieldName)
+       dispatch(gridActions.sortRows({field:column.fieldName,isSortedDescending:column.isSortedDescending}))
+    
     };
   const loadEntryToDMPlan=(id:string,header:boolean,page:number,size:number)=>{
     var Xrm= (window as any).Xrm;
@@ -154,7 +155,7 @@ const refreshButtonHandler=()=>{
         <EditRow service={props.service} formValue={editFormData}  close={()=>{SetdialogEditOpen(false)}}/>
       }      
       <GridView  handleColumnClick={handleColumnClick}/>
-      <GridFooter setCurrentPage={onChangePage} currentPage={currentPage} isLastPage={!isMoreRecords} />
+      {/* <GridFooter setCurrentPage={onChangePage} currentPage={currentPage} isLastPage={!isMoreRecords} /> */}
     </div>
   );
 }
