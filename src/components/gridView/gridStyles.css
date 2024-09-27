@@ -1,0 +1,13 @@
+ 
+  .details-list-container {
+    height: 500px;  /* Adjust as needed */
+    overflow-y: auto;
+  }
+  
+  .details-list-container .ms-DetailsList-headerWrapper {
+    position: sticky;
+    top: 0;
+    background-color: white;
+    z-index: 1;
+  }
+  

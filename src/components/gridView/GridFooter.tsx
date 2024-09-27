@@ -1,5 +1,7 @@
 import { IconButton } from '@fluentui/react/lib/Button';
 import { BackIcon, footerButtonStyles, footerStyles,ForwardIcon, PreviousIcon } from '../../styles/FooterStyles';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store/store';
 
  
 export interface IGridFooterProps {
@@ -9,7 +11,8 @@ export interface IGridFooterProps {
 }
 
 export const GridFooter = ({currentPage,isLastPage,setCurrentPage } : IGridFooterProps) => {
- 
+  const rows = useSelector((state: RootState) => state.grid.rows);
+
  
 
     const moveToFirst=()=>{
@@ -28,7 +31,7 @@ export const GridFooter = ({currentPage,isLastPage,setCurrentPage } : IGridFoote
     <div className={footerStyles.content}>
       {/* <span></span> */}
       <div>
-        <IconButton
+        {/* <IconButton
           styles={footerButtonStyles}
           iconProps={PreviousIcon}
           onClick={() => {
@@ -43,9 +46,9 @@ export const GridFooter = ({currentPage,isLastPage,setCurrentPage } : IGridFoote
              movePrevious();
           }}
           disabled={currentPage==1}
-        />
-        <span>Page {currentPage}</span>
-        <IconButton
+        /> */}
+        <span>Total Records {rows.length}</span>
+        {/* <IconButton
           styles={footerButtonStyles}
           iconProps={ForwardIcon}
           onClick={() => {
@@ -53,7 +56,7 @@ export const GridFooter = ({currentPage,isLastPage,setCurrentPage } : IGridFoote
             moveNext();
           }}
           disabled={isLastPage}
-        />
+        /> */}
       </div>
     </div>
   );

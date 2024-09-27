@@ -12,6 +12,7 @@ type rowSliceType={
     columns:IColumn[],
     onClickOfNewRow:false,
     addNewForm:KeyValue;
+    onEditFormClosed:any
 
 }
 var initialState:rowSliceType={
@@ -22,9 +23,23 @@ var initialState:rowSliceType={
     isEditingEnabled:undefined,
     selectedRowId:undefined,
     onClickOfNewRow:false,
-    addNewForm:{}
+    addNewForm:{},
+    onEditFormClosed:null
 };
+const generateUniqueValue=()=> {
+  const now = new Date();
 
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+  const day = String(now.getDate()).padStart(2, '0');
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const seconds = String(now.getSeconds()).padStart(2, '0');
+  const milliseconds = String(now.getMilliseconds()).padStart(3, '0');
+
+  // Concatenate all parts into a unique value
+  return `${year}${month}${day}${hours}${minutes}${seconds}${milliseconds}`;
+}
 export const gridSlice = createSlice({
     name: 'gridSlice',
     initialState: initialState,
@@ -49,6 +64,7 @@ export const gridSlice = createSlice({
           state.rows=[];
         var currentRow=state.rows.find(it=>it.key==action.payload.key);
         if(currentRow){
+          state.onEditFormClosed=generateUniqueValue();
           Object.keys(currentRow).forEach(key=>{
             currentRow[key]=action.payload[key]
           })

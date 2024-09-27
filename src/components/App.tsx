@@ -155,7 +155,7 @@ const refreshButtonHandler=()=>{
         <EditRow service={props.service} formValue={editFormData}  close={()=>{SetdialogEditOpen(false)}}/>
       }      
       <GridView  handleColumnClick={handleColumnClick}/>
-      {/* <GridFooter setCurrentPage={onChangePage} currentPage={currentPage} isLastPage={!isMoreRecords} /> */}
+      <GridFooter setCurrentPage={onChangePage} currentPage={currentPage} isLastPage={!isMoreRecords} />
     </div>
   );
 }
