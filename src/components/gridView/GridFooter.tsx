@@ -29,34 +29,8 @@ export const GridFooter = ({currentPage,isLastPage,setCurrentPage } : IGridFoote
    
   return (
     <div className={footerStyles.content}>
-      {/* <span></span> */}
-      <div>
-        {/* <IconButton
-          styles={footerButtonStyles}
-          iconProps={PreviousIcon}
-          onClick={() => {
-             moveToFirst();
-          }}
-          disabled={currentPage==1}
-        />
-        <IconButton
-          styles={footerButtonStyles}
-          iconProps={BackIcon}
-          onClick={() => {
-             movePrevious();
-          }}
-          disabled={currentPage==1}
-        /> */}
-        <span>Total Records {rows.length}</span>
-        {/* <IconButton
-          styles={footerButtonStyles}
-          iconProps={ForwardIcon}
-          onClick={() => {
-             
-            moveNext();
-          }}
-          disabled={isLastPage}
-        /> */}
+       <div>        
+        <span>Total Records {rows.length}</span>         
       </div>
     </div>
   );
