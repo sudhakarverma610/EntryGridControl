@@ -20,7 +20,7 @@ export const mapColumn=(headers:any[],sortedColumnKey:string|undefined,isSortedD
 
                     //  onColumnClick: (ev, column) => handleColumnClick(ev, column),
                       isSorted: sortedColumnKey === it.Name,  // Add sorting flag
-                      isFiltered:true,
+                      // isFiltered:true,
                       isSortedDescending: isSortedDescending,
                       ranges :it.Items?.map((it:any)=>{
                         return {key:it.Name,text:it.Name} as IDropdownOption

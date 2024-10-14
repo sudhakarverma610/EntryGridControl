@@ -10,18 +10,23 @@ import {
   DetailsRow,
   IDetailsHeaderProps,
   DetailsHeader,
+  IRenderFunction,
+  IconButton,
 } from "@fluentui/react";
 import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { gridActions } from "../../store/feature/gridSlice";
 import "./gridStyles.css";
+import FilterPanel from "./FilterPanel";
+import { IAppColumn } from "../../models/column";
 
 export default function GridView(props: {
   handleColumnClick: (ev: any, col: any) => void;
 }) {
   const [searchQuery, setSearchQuery] = useState<string>(""); // Local state to hold the search query
 
+  const [filter,setFilter]=useState<any>();
   const columns = useSelector((state: RootState) => {
     const columnsWithClickHandler = state.grid.columns.map((column) => ({
       ...column,
@@ -29,7 +34,10 @@ export default function GridView(props: {
     }));
     return columnsWithClickHandler;
   });
-
+ const onlycolumns = useSelector((state: RootState) => {
+     
+    return state.grid.columns;
+  });
   const rows = useSelector((state: RootState) => state.grid.rows);
   const isEditingEnabled = useSelector(
     (state: RootState) => state.grid.isEditingEnabled
@@ -61,36 +69,7 @@ export default function GridView(props: {
     console.log("onFormClosed changed", key);
     selectionRef?.current?.setAllSelected(false);
   }, [onFormClosed]);
-
-  // const _renderItemColumn = useCallback(
-  //   (item: any, index: number | undefined, column: IColumn | undefined) => {
-
-
-
-
-
-
-  //    // console.log('column',column)
-  //     if (column?.fieldName) {
-  //       return <div>{item?.[column.fieldName]} </div>;
-  //     }
-  //     return "";
-  //   },
-  //   [isEditingEnabled]
-  // );
-  const onRenderDetailsHeader = (
-    props: IDetailsHeaderProps | undefined,
-    defaultRender?: (props?: IDetailsHeaderProps) => JSX.Element | null
-  ) => {
-    if (!props) return null;
-  
-    // Customize header rendering
-    return (
-      <DetailsHeader
-        {...props}        
-      />
-    );
-  };
+ 
   const _renderItemColumn = useCallback(
     (item: any, index: number | undefined, column: IColumn | undefined) => {
       if (column?.fieldName) {
@@ -115,13 +94,58 @@ export default function GridView(props: {
   );
   
   const doesRowContainSearchQuery = (row: any) => {
-    return columns.some((col) => {
+    const matchesSearchQuery = columns.some((col) => {
       const fieldValue = col.fieldName ? row[col.fieldName] : "";
       return fieldValue
         ?.toString()
         ?.toLowerCase()
         .includes(searchQuery?.toLowerCase());
     });
+    let matchesFilter = true; // Default to true if no filter is applied
+    if (filter && filter.fieldName) {
+      const column = columns.find((col) => col.fieldName === filter.fieldName) as IAppColumn;
+      const fieldValue = column && column.fieldName? row[column.fieldName]?.toString().toLowerCase() : "";
+  
+      switch (filter.filterOption) {
+        case 'dropdown':
+
+          // eslint-disable-next-line no-case-declarations
+          let values=filter.filterValue.split(',');
+          // eslint-disable-next-line no-case-declarations
+          let names:any[]=[];
+          values.forEach((el: any) => {
+           let name= column.Items.find(it=>it.Value?.toString()==el)?.Name;
+           if(name)
+            names.push(name.toLowerCase())
+          });
+          if(fieldValue?.includes(";")){
+            const fieldValuesArray = fieldValue.split(';').map((value:any) => value.trim().toLowerCase()); // Split by ';' and trim whitespaces
+            matchesFilter = fieldValuesArray.some((value :any)=> names.includes(value));
+          }else
+             matchesFilter=  names.includes(fieldValue)
+           // eslint-disable-next-line no-case-declarations
+          //  matchesFilter=false//filters.lenght>0
+           break;// fieldValue.split(',').includes()
+        case 'Equals':
+          matchesFilter = fieldValue === filter.filterValue.toLowerCase();
+          break;
+        case 'Contains':
+          matchesFilter = fieldValue?.includes(filter?.filterValue?.toLowerCase());
+          break;
+        case 'StartsWith':
+          matchesFilter = fieldValue.startsWith(filter.filterValue.toLowerCase());
+          break;
+        case 'EndsWith':
+          matchesFilter = fieldValue.endsWith(filter.filterValue.toLowerCase());
+          break;
+        default:
+          matchesFilter = true; // Default behavior if no valid filter is found
+      }
+    }
+  
+    // Return true if the row matches both the search query and the filter criteria
+    return matchesSearchQuery && matchesFilter;
+   //  return filterrow;
   }
   const filteredRows = rows.filter((row) =>
     doesRowContainSearchQuery(row)
@@ -135,6 +159,72 @@ export default function GridView(props: {
     setSearchQuery(newValue || ""); // Update the search query
 
   };
+   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
+   const [filterColumn, setFilterColumn] = useState<any>(null); // Store the column being filtered
+   const [filterTarget, setFilterTarget] = useState<any>(null); // Store the target element for the Callout
+
+   const onRenderDetailsHeader: IRenderFunction<IDetailsHeaderProps> = (props, defaultRender) => {
+    if (!props || !defaultRender) return null;
+    const onFilterClick = (event: React.MouseEvent<HTMLElement>, column?: IColumn) => {
+        setFilterColumn(column);
+        if(event.currentTarget)
+        setFilterTarget(event.currentTarget); // Set the target for the Callout
+        setIsFilterPanelOpen(true);
+    };
+
+    // Render the column headers with filter buttons
+    return defaultRender({
+        ...props,
+        onRenderColumnHeaderTooltip: (tooltipHostProps) => (
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+                {tooltipHostProps?.children}
+                {tooltipHostProps?.column && (
+                    <IconButton
+                        iconProps={
+                          { iconName: (tooltipHostProps.column as any).filterValue ? 'FilterSolid' : 'Filter' ,
+                            style:{ color:'grey'}
+                          }}
+                        title="Filter"
+                        ariaLabel="Filter"
+                        onClick={(e:any) => onFilterClick(e, tooltipHostProps.column)} // Open the inline filter panel for the clicked column
+                    />
+                )}
+            </div>
+        ),
+    });
+};
+const applyFilter = (filter: { filterOption: string; filterValue: string ,fieldName :string}) => {     
+    console.log('filter',filter);
+    setFilter(filter);
+    const updatedColumns = onlycolumns.map((col) => {
+      if (col.fieldName === filter.fieldName) {
+        return { ...col, filterValue: filter.filterValue }; // Update filterValue
+      }
+      return col;
+    });
+    dispatch(gridActions.setColumns(updatedColumns)); // Update the columns in Redux    
+    setIsFilterPanelOpen(false); 
+
+};
+
+const clearFilter = () => {
+  
+  const updatedColumns = onlycolumns.map((col) => {
+    if (col.fieldName === filter?.fieldName) {
+      return { ...col, filterValue: undefined }; // Update filterValue
+    }
+    return col;
+  });
+  dispatch(gridActions.setColumns(updatedColumns));
+
+  setFilter(null); // Reset the applied filter
+  setIsFilterPanelOpen(false); // Close the panel after clearing the filter
+};
+const getFilterValue=()=>{
+  if(filter?.fieldName==filterColumn?.fieldName)
+    return filter?.filterValue;
+  return undefined;
+}
   return (
     <div
       className="details-list-container"
@@ -157,24 +247,22 @@ export default function GridView(props: {
         layoutMode={DetailsListLayoutMode.justified}
         constrainMode={ConstrainMode.unconstrained}
         onRenderItemColumn={_renderItemColumn}
-        onShouldVirtualize={() => filteredRows.length > 50}
-        // onRenderRow={(props) => {
-        //   if (!props) return null;
-          
-        //   const isHighlighted = doesRowContainSearchQuery(props.item);
-          
-        //   // Apply custom styles to the row if it's highlighted
-        //   const customStyles = {
-        //     root: {
-        //       backgroundColor: isHighlighted ? "lightgreen" : "inherit",
-        //     },
-        //   };
-      
-        //   return <DetailsRow {...props} styles={customStyles} />;
-        // }}
+        onShouldVirtualize={() => filteredRows.length > 50}        
         onRenderDetailsHeader={onRenderDetailsHeader} // Custom header rendering
 
       />
+       {isFilterPanelOpen && (
+        <FilterPanel
+          isOpen={isFilterPanelOpen}
+          column={filterColumn}
+          value={getFilterValue()}
+          onDismiss={() => setIsFilterPanelOpen(false)}
+          onApplyFilter={applyFilter}
+          onClearFilter={clearFilter}
+          target={filterTarget} // Pass the clicked target element to position the panel
+        />
+      )}
+      
     </div>
   );
 }
