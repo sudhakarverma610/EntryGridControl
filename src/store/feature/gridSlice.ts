@@ -12,7 +12,8 @@ type rowSliceType={
     columns:IColumn[],
     onClickOfNewRow:false,
     addNewForm:KeyValue;
-    onEditFormClosed:any
+    onEditFormClosed:any,
+    searchValue:string;
 
 }
 var initialState:rowSliceType={
@@ -24,7 +25,8 @@ var initialState:rowSliceType={
     selectedRowId:undefined,
     onClickOfNewRow:false,
     addNewForm:{},
-    onEditFormClosed:null
+    onEditFormClosed:null,
+    searchValue:""
 };
 const generateUniqueValue=()=> {
   const now = new Date();
@@ -44,6 +46,9 @@ export const gridSlice = createSlice({
     name: 'gridSlice',
     initialState: initialState,
     reducers: {
+      searchChange: (state,action:PayloadAction<string>) => {               
+        state.searchValue=action.payload;
+       },
       setColumns: (state,action:PayloadAction<IColumn[]>) => {               
         state.columns=action.payload;
        },

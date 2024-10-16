@@ -54,12 +54,18 @@ export default function App(props:{service:PCFWebAPI}) {
         }else{
           headers=it.Header;
         }
+        let column:IColumn|undefined=undefined;
         if(header){
-          let columns=mapColumn(it.Header,sortedColumnKey,isSortedDescending);        
-          console.log('columns',columns)
+          let columns=mapColumn(it.Header,sortedColumnKey,isSortedDescending);   
+
+          console.log('columns',columns);
+          if(columns&&columns.length>0)
+           column=  columns[0]
           dispatch(gridActions.setColumns(columns));
         }      
         dispatch(gridActions.setRows(mapRows({columns:it.Header,rows:it.Attributes})));  
+        if(column)
+        handleColumnClick(undefined as any,column);
         setFirstTime(true);    
         if(it?.PageMeta)
             SetIsMoreRecord(it?.PageMeta?.IsMoreRecords)

@@ -108,13 +108,11 @@ export default function RenderControl(props:{col:IAppColumn,formSubmitted:boolea
                 onSelectDate={onSelectDate}
                 formatDate={onFormatDate} 
                 strings={defaultDatePickerStrings}
-                isRequired={props.col.IsMandatory&&props.formSubmitted&&!props.fieldValue}
-                className={props.col.IsMandatory?"required":""}
+                 className={props.col.IsMandatory?"required":""}
                  /> 
             )}
             {props.col.data === FieldType.TextArea && (
                 <TextField label={props.col.name} key={props.col.fieldName} onChange={onChange} rows={5} 
-                 required={props.col.IsMandatory}
                  errorMessage={props.error}
                  className={props.col.IsMandatory?"required":""}
                  value={props.fieldValue} 
@@ -140,8 +138,7 @@ export default function RenderControl(props:{col:IAppColumn,formSubmitted:boolea
                     defaultSelectedKeys={getFormatedValue(props.fieldValue)}  
                     options={(props.col as any)?.ranges}
                     onChange={onChangeMultiDropDown}
-                    required={props.col.IsMandatory}
-                    errorMessage={props.error}
+                     errorMessage={props.error}
                     className={props.col.IsMandatory?"required":""}
                     selectedKeys={selectedKeys}
                     multiSelect

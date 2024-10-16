@@ -1,8 +1,9 @@
-import { CommandBarButton, IButtonStyles, IIconProps, Stack } from "@fluentui/react";
+import { CommandBarButton, IButtonStyles, IIconProps, Stack, TextField } from "@fluentui/react";
 import { addIcon, commandBarButtonStyles, deleteIcon, refreshIcon, saveIcon } from "../../styles/ButtonStyles";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
-import { useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
+import { gridActions } from "../../store/feature/gridSlice";
 
 export interface IHeaderProps {
     refreshButtonHandler: () => void;
@@ -24,6 +25,7 @@ export interface IHeaderProps {
   }
 export default function Header(props:IHeaderProps) {
    const isEditable=useSelector((it:RootState)=>it.grid.selectedRowId);
+   const dispatch=useDispatch()
    const buttonWithoutEdit: ButtonProps[] = [
     {
       order: 1,
@@ -87,6 +89,14 @@ export default function Header(props:IHeaderProps) {
         }
        },
       [isEditable])    
+      const searchChange = (
+        event: FormEvent<HTMLInputElement | HTMLTextAreaElement>,
+        newValue?: string
+      ) => {
+        console.log("newValue", newValue);
+        dispatch(gridActions.searchChange(newValue || ""));
+
+       };
       const listButtons = buttons.map(button =>
         <CommandBarButton
           key={button.order}
@@ -98,7 +108,10 @@ export default function Header(props:IHeaderProps) {
         />);
     
       return <Stack horizontal horizontalAlign="end">
-        {listButtons}
+        <Stack horizontal className="searchbtn">
+        <TextField onChange={searchChange} placeholder="Search..." />        
+        </Stack>
+         {listButtons}
       </Stack>;
   
 }

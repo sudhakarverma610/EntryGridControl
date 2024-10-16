@@ -97,12 +97,12 @@ export default function EditRow(prop:{service:PCFWebAPI,formValue:any,close:()=>
       <Panel
         isOpen={isOpen}
         onDismiss={onclose}
-        headerText="Add new Entry"
+        headerText="Edit Entry"
         closeButtonAriaLabel="Close"
         onRenderFooterContent={onRenderFooterContent}         
         isFooterAtBottom={true}
         hasCloseButton={false}
-        isBlocking={false}
+        isBlocking={true}
         type={PanelType.medium}
       > <form onSubmit={handleSubmit} id="my-form">
       

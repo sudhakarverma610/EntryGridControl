@@ -55,6 +55,7 @@ export default function AppRow(prop:{service:PCFWebAPI}) {
             console.log('Row Added',it);
             //prop.service.updateRowNumber(rowNumber+1);
             dataToSentToServer.rowNo=it.Data;
+            dataToSentToServer.key=it.Data;
             dispatch(gridActions.insertNewRow(dataToSentToServer));                
             dispatch(gridActions.addNewRow(false))
             dismissPanel(); 
@@ -91,7 +92,7 @@ export default function AppRow(prop:{service:PCFWebAPI}) {
         ),
         [dismissPanel],
       ); 
-    
+      
   return (
     <div>      
      
@@ -103,7 +104,7 @@ export default function AppRow(prop:{service:PCFWebAPI}) {
         onRenderFooterContent={onRenderFooterContent}         
         isFooterAtBottom={true}
         hasCloseButton={false}
-        isBlocking={false}
+        isBlocking={true}
         type={PanelType.medium}
       > <form onSubmit={handleSubmit} id="my-form">
       
