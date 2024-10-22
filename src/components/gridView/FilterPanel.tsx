@@ -21,7 +21,9 @@ interface FilterPanelProps {
     filterValue: string;
     fieldName: string;
   }) => void;
-  onClearFilter: () => void;
+  onClearFilter: (data:{
+    fieldName: string;
+  }) => void;
 }
 
 const FilterPanel: FC<FilterPanelProps> = ({
@@ -83,7 +85,7 @@ const FilterPanel: FC<FilterPanelProps> = ({
   };
   const handleClear = () => {
     setFilterValue("");
-    onClearFilter();
+    onClearFilter({fieldName: column.fieldName ?? ""});
     onDismiss();
   };
 

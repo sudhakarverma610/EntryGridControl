@@ -102,7 +102,8 @@ export default function EditRow(prop:{service:PCFWebAPI,formValue:any,close:()=>
         onRenderFooterContent={onRenderFooterContent}         
         isFooterAtBottom={true}
         hasCloseButton={false}
-        isBlocking={true}
+        isBlocking={false}
+        
         type={PanelType.medium}
       > <form onSubmit={handleSubmit} id="my-form">
       

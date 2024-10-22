@@ -26,6 +26,7 @@ export default function GridView(props: {
   const searchQueryChange = useSelector((state: RootState) => state.grid.searchValue);
 
   const [filter, setFilter] = useState<any>();
+  const [filters, setFilters] = useState<any[]>([]);
   const columns = useSelector((state: RootState) => {
     const columnsWithClickHandler = state.grid.columns.map((column) => ({
       ...column,
@@ -108,6 +109,15 @@ export default function GridView(props: {
         .includes(searchQuery?.toLowerCase());
     });
     let matchesFilter = true; // Default to true if no filter is applied
+    filters.forEach(it=>{
+      matchesFilter= matchesFilter&&  checkFilters(it,row)
+    })
+    
+    // Return true if the row matches both the search query and the filter criteria
+    return matchesSearchQuery && matchesFilter;
+   };
+  const checkFilters=(filter:any,row:any)=>{
+    let matchesFilter = true;
     if (filter && filter.fieldName) {
       const column = columns.find(
         (col) => col.fieldName === filter.fieldName
@@ -116,7 +126,7 @@ export default function GridView(props: {
         column && column.fieldName
           ? row[column.fieldName]?.toString().toLowerCase()
           : "";
-
+         // matchesFilter= checkFilterExist(column,fieldValue)
       switch (filter.filterOption) {
         case "dropdown":
           // eslint-disable-next-line no-case-declarations
@@ -159,20 +169,10 @@ export default function GridView(props: {
           matchesFilter = true; // Default behavior if no valid filter is found
       }
     }
-
-    // Return true if the row matches both the search query and the filter criteria
-    return matchesSearchQuery && matchesFilter;
-    //  return filterrow;
-  };
-  const filteredRows = rows.filter((row) => doesRowContainSearchQuery(row));
-
-  const searchChange = (
-    event: FormEvent<HTMLInputElement | HTMLTextAreaElement>,
-    newValue?: string
-  ) => {
-    console.log("newValue", newValue);
-    setSearchQuery(newValue || ""); // Update the search query
-  };
+    return matchesFilter;
+  } 
+   
+  const filteredRows = rows.filter((row) => doesRowContainSearchQuery(row)); 
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
   const [filterColumn, setFilterColumn] = useState<any>(null); // Store the column being filtered
   const [filterTarget, setFilterTarget] = useState<any>(null); // Store the target element for the Callout
@@ -221,6 +221,21 @@ export default function GridView(props: {
   }) => {
     console.log("filter", filter);
     setFilter(filter);
+    let filterFound = filters.find(it => it.fieldName === filter.fieldName);
+
+    if (filterFound) {
+      // Create a new copy of the filters array
+      let newFilters = filters.map(it =>
+        it.fieldName === filter.fieldName ? { ...filter } : it
+      );
+      
+      setFilters(newFilters); // Update the state with the new filters array
+    } else {
+      // Create a new copy of the existing filters and add the new filter
+      let newFilters = [...filters, { ...filter }];
+      
+      setFilters(newFilters); // Update the state with the new filters array
+    }
     const updatedColumns = onlycolumns.map((col) => {
       if (col.fieldName === filter.fieldName) {
         return { ...col, filterValue: filter.filterValue }; // Update filterValue
@@ -231,9 +246,9 @@ export default function GridView(props: {
     setIsFilterPanelOpen(false);
   };
 
-  const clearFilter = () => {
+  const clearFilter = (data:{fieldName: string}) => {
     const updatedColumns = onlycolumns.map((col) => {
-      if (col.fieldName === filter?.fieldName) {
+      if (col.fieldName === data?.fieldName) {
         return { ...col, filterValue: undefined }; // Update filterValue
       }
       return col;
@@ -241,11 +256,21 @@ export default function GridView(props: {
     dispatch(gridActions.setColumns(updatedColumns));
 
     setFilter(null); // Reset the applied filter
+    let filterIndex=filters.findIndex(it=>it.fieldName==data?.fieldName);
+    if(filterIndex>-1)
+     {
+      let newFilters=[...filters]
+      newFilters.splice(filterIndex, 1);
+      setFilters(newFilters);
+     }
     setIsFilterPanelOpen(false); // Close the panel after clearing the filter
   };
   const getFilterValue = () => {
     if (filter?.fieldName == filterColumn?.fieldName)
       return filter?.filterValue;
+   let filterSaved= filters.find(it=>it.fieldName==filterColumn?.fieldName);
+   if(filterSaved)
+    return filterSaved?.filterValue;
     return undefined;
   };
   return (
@@ -253,11 +278,7 @@ export default function GridView(props: {
       className="details-list-container"
       style={{ height: "400px", overflowY: "auto", position: "relative" }}
     >
-      {/* <Stack horizontal className="searchbtn">
-        <TextField onChange={searchChange} placeholder="Search..." />
-      </Stack> */}
-
-       
+    
         <DetailsList
           items={filteredRows}
           columns={columns}

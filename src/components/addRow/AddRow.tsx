@@ -104,7 +104,7 @@ export default function AppRow(prop:{service:PCFWebAPI}) {
         onRenderFooterContent={onRenderFooterContent}         
         isFooterAtBottom={true}
         hasCloseButton={false}
-        isBlocking={true}
+        isBlocking={false}
         type={PanelType.medium}
       > <form onSubmit={handleSubmit} id="my-form">
       
