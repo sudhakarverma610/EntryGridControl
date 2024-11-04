@@ -148,6 +148,7 @@ const refreshButtonHandler=()=>{
         saveButtonHandler={() => {}}
         deleteButtonHandler={() => deleteButtonHandler()}
         newButtonHandler={() => {AddNewRow()}}
+        service={props.service}
         editButtonHandler={()=>{
           onEditClick()
         }}
