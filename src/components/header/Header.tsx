@@ -88,67 +88,95 @@ export default function Header(props:IHeaderProps) {
         var formContext=(window as any)?.Xrm?.Page;
         let lrsaRef=formContext?.getAttribute('cm_lrsaid')?.getValue()?.[0];
         if(!lrsaRef){
-           return;
+          setButtons(isEditable,true)
+              return;
         }
-       var currentUserId =(window as any)?.Xrm?.Utility?.getGlobalContext()?.userSettings?.userId?.replace(/[{}]/g, '')?.toLowerCase();
-        var template=formContext?.getAttribute("cm_istemplate")?.getValue();
-        if(!template){
-          props.service.retrieveRecord("cm_lrsa", lrsaRef?.id, "?$select=_cm_managerid_value").then(
-              (vehicalRes)=>{
-                  if(vehicalRes&&vehicalRes?._cm_managerid_value?.replace(/[{}]/g, '')?.toLowerCase()===currentUserId){
-                    //enablebutton
-                    setEnableButton(true);
-                  }else
-                    setEnableButton(false);
-              },
-              (err)=>{
-                  console.log('error',err);
-              }
-          )
-      }else {
-          let isMemberOfTeam=(userId:string, teamId:string, callback:any)=> {
-              const query = `?$filter=systemuserid eq ${userId} and teamid eq ${teamId}`;        
-              props.service.retrieveMultipleRecords("teammembership", query).then(
-                  (result) =>{
-                      // Check if any records were returned
-                      if (result.entities.length > 0) {
-                          callback(true); // User is a member of the team
-                      } else {
-                          callback(false); // User is not a member of the team
-                      }
+        var userSettings=(window as any)?.Xrm?.Utility?.getGlobalContext()?.userSettings;
+        var currentUserId =userSettings?.userId?.replace(/[{}]/g, '')?.toLowerCase();
+        var roles=userSettings?.roles?.get()?.map((it:any)=>it.name);
+        const taskPerform=()=>{
+          var template=formContext?.getAttribute("cm_istemplate")?.getValue();
+          if(!template){
+            props.service.retrieveRecord("cm_lrsa", lrsaRef?.id, "?$select=_cm_managerid_value").then(
+                (vehicalRes)=>{
+                    if(vehicalRes&&vehicalRes?._cm_managerid_value?.replace(/[{}]/g, '')?.toLowerCase()===currentUserId){
+                      //enablebutton
+                      setButtons(isEditable,true)
+                    }else
+                    setButtons(isEditable,false)
                   },
-                  (error) =>{
-                      console.error("Error checking team membership: " + error.message);
-                      callback(false); // Handle error case
-                  }
-              );
-          }
-          let checkUserPartOfTeam=()=>{
-            props.service.retrieveMultipleRecords("cm_setting","?$filter=cm_name eq 'Secuirty_Team_Configuration'&$select=cm_value").then(it=>{
-             let value= it.entities?.[0].cm_value;
-             if(value){
-              let teamId= JSON.parse(value)?.cm_dm_plan;
-               //Project Team - test
-                isMemberOfTeam(currentUserId,teamId,(isMember:boolean)=>{
-                  if(isMember){
-                    setEnableButton(true);
-                  }else{
-                    setEnableButton(false);
-                  }
+                (err)=>{
+                    console.log('error',err);
+                }
+            )
+        }else {
+            let isMemberOfTeam=(userId:string, teamId:string, callback:any)=> {
+                const query = `?$filter=systemuserid eq ${userId} and teamid eq ${teamId}`;        
+                props.service.retrieveMultipleRecords("teammembership", query).then(
+                    (result) =>{
+                        // Check if any records were returned
+                        if (result.entities.length > 0) {
+                            callback(true); // User is a member of the team
+                        } else {
+                            callback(false); // User is not a member of the team
+                        }
+                    },
+                    (error) =>{
+                        console.error("Error checking team membership: " + error.message);
+                        callback(false); // Handle error case
+                    }
+                );
+            }
+            let checkUserPartOfTeam=()=>{
+              props.service.retrieveMultipleRecords("cm_setting","?$filter=cm_name eq 'Secuirty_Team_Configuration'&$select=cm_value").then(it=>{
+               let value= it.entities?.[0].cm_value;
+               if(value){
+                let teamId= JSON.parse(value)?.cm_dm_plan;
+                 //Project Team - test
+                  isMemberOfTeam(currentUserId,teamId,(isMember:boolean)=>{
+                    if(isMember){
+                       setButtons(isEditable,true)
+                    }else{
+                      setButtons(isEditable,false);
+                    }
+                })
+               }
               })
-             }
-            })
-          };
-          checkUserPartOfTeam();        
-          
-      }
-        if(isEditable){
-          setButton([...buttonWithEdit])
-        }else{
-          setButton([...buttonWithoutEdit])
+            };
+            checkUserPartOfTeam();        
+            
         }
+        };
+        props.service.retrieveMultipleRecords("cm_setting","?$filter=cm_name eq 'System_Secuirty_Roles'&$select=cm_value").then(it=>{
+          let value= it.entities?.[0].cm_value;
+          if(value){
+            let config=JSON.parse(value);
+            const checkRoles = config;
+            const hasAnyRole = checkRoles.some((role:any) => roles.includes(role));
+            if (hasAnyRole) 
+                {
+                  setButtons(isEditable,true);
+                  return;
+                }             
+              taskPerform();
+          }
+        })
+             
+       
        },
-      [isEditable])    
+      [isEditable])
+      const setButtons =(isEditable:string | undefined,enabled:boolean)=>{
+        if(enabled){
+          if(isEditable){
+            setButton([...buttonWithEdit])
+          }else{
+            setButton([...buttonWithoutEdit])
+          }
+        }else{
+          setButton([]);
+        }
+        
+      }    
       const searchChange = (
         event: FormEvent<HTMLInputElement | HTMLTextAreaElement>,
         newValue?: string
@@ -164,14 +192,14 @@ export default function Header(props:IHeaderProps) {
           iconProps={button.icon}
           styles={button.styles ?? commandBarButtonStyles}
           text={button.text}
-          onClick={button.onClick}
+          onClick={button.onClick}          
         />);
     
       return <Stack horizontal horizontalAlign="end">
         <Stack horizontal className="searchbtn">
         <TextField onChange={searchChange} placeholder="Search..." />        
         </Stack>
-         {enableButton&& listButtons}
+         {listButtons}
       </Stack>;
   
 }

@@ -17,14 +17,16 @@ export default function EditRow(prop:{service:PCFWebAPI,formValue:any,close:()=>
     const [formSubmitted,setFormSubmitted] = useState(false);
     const [addRowForm, setAddRowForm] = useState<any>(prop.formValue);
     const dispatch = useDispatch();     
-    useEffect(()=>{
-        console.log('isAddEnabled',isAddEnabled)
-        if(isAddEnabled)
-          openPanel();
-        else{
-          dismissPanel();
-        }
-    },[isAddEnabled]);
+   
+    useEffect(()=>{       
+      if (isAddEnabled && !isOpen) {
+        console.log("Opening panel");
+        openPanel();
+      } else if (!isAddEnabled && isOpen) {
+        console.log("Closing panel");
+        dismissPanel();
+      }
+    },[isAddEnabled, isOpen, openPanel, dismissPanel]);
     const onclose=()=>{ 
       prop.close()
       dismissPanel(); 
@@ -102,7 +104,7 @@ export default function EditRow(prop:{service:PCFWebAPI,formValue:any,close:()=>
         onRenderFooterContent={onRenderFooterContent}         
         isFooterAtBottom={true}
         hasCloseButton={false}
-        isBlocking={false}
+        isBlocking={true}
         
         type={PanelType.medium}
       > <form onSubmit={handleSubmit} id="my-form">

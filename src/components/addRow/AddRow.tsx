@@ -17,14 +17,15 @@ export default function AppRow(prop:{service:PCFWebAPI}) {
     const [formSubmitted,setFormSubmitted] = useState(false);
     const [addRowForm, setAddRowForm] = useState<any>({});
     const dispatch = useDispatch();       
-    useEffect(()=>{
-        console.log('isAddEnabled',isAddEnabled)
-        if(isAddEnabled)
-          openPanel();
-        else{
-          dismissPanel();
-        }
-    },[isAddEnabled]);
+    useEffect(()=>{       
+      if (isAddEnabled && !isOpen) {
+        console.log("Opening panel");
+        openPanel();
+      } else if (!isAddEnabled && isOpen) {
+        console.log("Closing panel");
+        dismissPanel();
+      }
+    },[isAddEnabled, isOpen, openPanel, dismissPanel]);
     const onclose=()=>{
       dispatch(gridActions.addNewRow(false))
       dismissPanel();
@@ -104,7 +105,7 @@ export default function AppRow(prop:{service:PCFWebAPI}) {
         onRenderFooterContent={onRenderFooterContent}         
         isFooterAtBottom={true}
         hasCloseButton={false}
-        isBlocking={false}
+        isBlocking={true}
         type={PanelType.medium}
       > <form onSubmit={handleSubmit} id="my-form">
       
