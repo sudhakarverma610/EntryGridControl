@@ -50,7 +50,7 @@ export default function GridCell(props: { item: any; column: IAppColumn }) {
     <>
       {(column.data == FieldType.Text ||
         column.data === FieldType.TextArea ||
-        column.data == FieldType.Number) && (
+        column.data == FieldType.Number || column.data == FieldType.Url) && (
         <TextField defaultValue={defaultValue()} onChange={onChange} />
       )}
 

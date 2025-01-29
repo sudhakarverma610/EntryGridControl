@@ -10,7 +10,8 @@ export enum FieldType
     Dropdown = 3,
     MultiSelectDropdown = 4,
     DateOnly = 5,
-    DateAndTime = 6
+    DateAndTime = 6,
+    Url=7
 }
 
 export const sampleDMPlan={

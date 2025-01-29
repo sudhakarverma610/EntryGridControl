@@ -175,9 +175,15 @@ interface IRequest{
         var it = await response;
         console.log('response',it)
         if (it.status == 401) {
-            var token = await this.getToken();
-            localStorage.setItem("token", token.token);
-            this._token = token.token;
+            if(Config.tokenFromLocal){
+                
+                this._token = Config.tokenFromLocal;
+            }else{
+                var token = await this.getToken();
+                localStorage.setItem("token", token.token);
+                this._token = token.token;
+            }
+           
             return this.SendRequest(method, url, payload)
         }
         if (it.status == 204) {

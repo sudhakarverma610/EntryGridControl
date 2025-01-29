@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <manifest>
-  <control namespace="Audi" constructor="AttributeGrid" version="1.0.12" display-name-key="AttributeGrid" description-key="AttributeGrid description" control-type="standard" >
+  <control namespace="Audi" constructor="AttributeGrid" version="1.0.15" display-name-key="AttributeGrid" description-key="AttributeGrid description" control-type="standard" >
    
     <external-service-usage enabled="false">
       

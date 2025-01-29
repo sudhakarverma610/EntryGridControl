@@ -3,6 +3,7 @@ export enum Environment{
     Prod
 }
 export class Config { 
+    public static tokenFromLocal="";
     public static serverUrl = 'https://cmml.crm4.dynamics.com/';//Trail Local   
     public static Environment=Environment.Prod; 
     public static ConsoleEnabled=true;

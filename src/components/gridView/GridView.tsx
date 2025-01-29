@@ -18,6 +18,7 @@ import { gridActions } from "../../store/feature/gridSlice";
 import "./gridStyles.css";
 import FilterPanel from "./FilterPanel";
 import { IAppColumn } from "../../models/column";
+import { FieldType } from "../../models/servicesModel/attributeReponseDto";
 
 export default function GridView(props: {
   handleColumnClick: (ev: any, col: any) => void;
@@ -77,13 +78,14 @@ export default function GridView(props: {
   const _renderItemColumn = useCallback(
     (item: any, index: number | undefined, column: IColumn | undefined) => {
       if (column?.fieldName) {
-        const fieldValue = item[column.fieldName]?.toString() || "";
+        const fieldValue =  item[column.fieldName]?.toString() || "";
         const searchQueryLowerCase = searchQueryChange.toLowerCase();
         // Check if the cell's value matches the search query (case-insensitive)
         const isMatch =
           searchQueryLowerCase.length > 0
             ? fieldValue.toLowerCase().includes(searchQueryLowerCase)
             : false;
+
         return (
           <span
             style={{
@@ -91,7 +93,13 @@ export default function GridView(props: {
               fontWeight: isMatch ? "bold" : "normal",
             }}
           >
-            {fieldValue}
+          
+            
+            {column.data == FieldType.Url &&fieldValue.includes('http') && 
+            <a href={fieldValue} target="_blank">{fieldValue}</a> }
+             {column.data == FieldType.Url &&!fieldValue.includes('http') && 
+              fieldValue}
+            {column.data !== FieldType.Url&& fieldValue}
           </span>
         );
       }
