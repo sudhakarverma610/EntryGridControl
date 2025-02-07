@@ -91,7 +91,7 @@ export default function RenderControl(props:{col:IAppColumn,formSubmitted:boolea
    } 
   return (    
        <>
-        {(props.col.fieldName&&(props.col.data === FieldType.Text||props.col.data === FieldType.Number)) && (
+        {(props.col.fieldName&&(props.col.data === FieldType.Text||props.col.data === FieldType.Number||props.col.data === FieldType.Url)) && (
                 <TextField              
                 label={props.col.name} key={props.col.fieldName} onChange={onChange}   
                  errorMessage={props.error}
