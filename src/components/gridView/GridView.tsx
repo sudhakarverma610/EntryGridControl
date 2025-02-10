@@ -54,7 +54,8 @@ export default function GridView(props: {
     selectionRef.current = new Selection({
       onSelectionChanged: () => {
         const selectedItems = selectionRef.current?.getSelection();
-        const selectedKey = selectedItems?.[0]?.key?.toString();
+        // const selectedKey = selectedItems?.[0]?.key?.toString();
+        const selectedKey = selectedItems?.filter(it=>it.key?.toString())?.map(it=>it.key?.toString()) as string[];
         console.log("Selected key:", selectedKey);
         dispatch(gridActions.setSelectedRowId(selectedKey)); // Store selected row in Redux
       },
@@ -292,7 +293,7 @@ export default function GridView(props: {
           columns={columns}
           setKey="set"
           selection={selectionRef.current}
-          selectionMode={SelectionMode.single}
+          selectionMode={SelectionMode.multiple}
           layoutMode={DetailsListLayoutMode.justified}
           constrainMode={ConstrainMode.unconstrained}
           onRenderItemColumn={_renderItemColumn}

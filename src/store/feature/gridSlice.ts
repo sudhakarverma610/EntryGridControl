@@ -8,7 +8,7 @@ type rowSliceType={
     maxRowCount:number,
     isEditRow:boolean,
     isEditingEnabled:number|undefined,
-    selectedRowId:string|undefined,
+    selectedRowId:string[]|undefined,
     columns:IColumn[],
     onClickOfNewRow:false,
     addNewForm:KeyValue;
@@ -108,7 +108,7 @@ export const gridSlice = createSlice({
       setEnableFlag:(state, action: PayloadAction<number|undefined>) =>{
         state.isEditingEnabled=action.payload;
      },
-     setSelectedRowId:(state, action: PayloadAction<string|undefined>) =>{
+     setSelectedRowId:(state, action: PayloadAction<string[]|undefined>) =>{
       state.selectedRowId=action.payload;
       if(!state.selectedRowId)
          state.isEditingEnabled=undefined;

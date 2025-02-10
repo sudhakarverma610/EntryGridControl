@@ -60,7 +60,7 @@ export default function Header(props:IHeaderProps) {
       order: 2,
       text: 'Edit',
       icon: addIcon,
-      disabled:false,
+      disabled:(isEditable&&isEditable.length>1)?true:false,
       onClick: props.editButtonHandler,
     },
     {
@@ -112,7 +112,6 @@ export default function Header(props:IHeaderProps) {
           return;
         } 
         setButtons(isEditable,true);
-
       }; 
       useEffect(()=>{
         var userSettings=(window as any)?.Xrm?.Utility?.getGlobalContext()?.userSettings;
@@ -134,9 +133,9 @@ export default function Header(props:IHeaderProps) {
           }
         })
       },[])
-      const setButtons =(isEditable:string | undefined,enabled:boolean)=>{
+      const setButtons =(isEditable:string[] | undefined,enabled:boolean)=>{
         if(enabled){
-          if(isEditable){
+          if(isEditable&&isEditable?.length>0){
             setButton([...buttonWithEdit])
           }else{
             setButton([...buttonWithoutEdit])
@@ -144,7 +143,6 @@ export default function Header(props:IHeaderProps) {
         }else{
           setButton(buttonRefresh);
         }
-        
       }    
       const searchChange = (
         event: FormEvent<HTMLInputElement | HTMLTextAreaElement>,
