@@ -106,11 +106,11 @@ export default function Header(props:IHeaderProps) {
           setButtons(isEditable,isEnabled?true: enableButton);
           return;
         }   
-        var statuscode=formContext?.getAttribute("statuscode")?.getValue();
-        if(statuscode!=1){
-          setButtons(isEditable,isEnabled?true: enableButton);
-          return;
-        } 
+        // var statuscode=formContext?.getAttribute("statuscode")?.getValue();
+        // if(statuscode!=1){
+        //   setButtons(isEditable,isEnabled?true: enableButton);
+        //   return;
+        // } 
         setButtons(isEditable,true);
       }; 
       useEffect(()=>{

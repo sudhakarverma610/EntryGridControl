@@ -1,6 +1,4 @@
 import {IInputs, IOutputs} from "./generated/ManifestTypes";
-import DataSetInterfaces = ComponentFramework.PropertyHelper.DataSetApi;
-type DataSet = ComponentFramework.PropertyTypes.DataSet;
 import { createRoot, Root } from "react-dom/client";
 import { createElement } from "react";
 import AppProvider from "../src/components/AppProvider";

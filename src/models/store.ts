@@ -1,5 +1,5 @@
 import {  StoreEnhancer, ThunkDispatch, ThunkMiddleware, Tuple, UnknownAction } from '@reduxjs/toolkit';
-import { EnhancedStore } from '@reduxjs/toolkit/dist/configureStore';
+import { EnhancedStore } from '@reduxjs/toolkit';
 
 export type Store =EnhancedStore<{
     counter: {

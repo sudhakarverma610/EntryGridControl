@@ -108,7 +108,8 @@ const deleteButtonHandler=()=>{
   var id=props.service.getContext()?.parameters?.DmPlanId?.raw;
   if(id&&selectedRowId)
     deletRowsDmRecord(props.service,id,selectedRowId).then(()=>{
-    dispatch(gridActions.deleteRow(selectedRowId))
+    dispatch(gridActions.deleteRow(selectedRowId));
+    refreshButtonHandler();
   },()=>{
     console.log('an error occure while deleting')
   })
