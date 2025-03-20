@@ -24,7 +24,9 @@ export default function App(props:{service:PCFWebAPI}) {
   const [currentColumns,setcurrentColumns]=useState([])
   const [currentPage,setCurrentPage]=useState(1);
   const [isMoreRecords,SetIsMoreRecord]=useState(false)
-  const [dialogEditOpen,SetdialogEditOpen]=useState(false)
+  const [dialogEditOpen,SetdialogEditOpen]=useState(false);
+  const [dialogAddOpen,SetdialogAddOpen]=useState(false)
+
   const [editFormData,SeteditFormData]=useState<any>({})
   const [sortedColumnKey, setSortedColumnKey] = useState<string | undefined>(undefined);
   const [isSortedDescending, setIsSortedDescending] = useState<boolean>(false);
@@ -83,8 +85,10 @@ export default function App(props:{service:PCFWebAPI}) {
   },[dialogClosed])
 
   const AddNewRow=()=>{     
+    SetdialogAddOpen(true)
+
      dispatch(gridActions.initialForm());
-     dispatch(gridActions.addNewRow(true))
+    //  dispatch(gridActions.addNewRow(true))
   }
   const onEditClick=()=>{
     SetdialogEditOpen(true)
@@ -156,8 +160,8 @@ const refreshButtonHandler=()=>{
         isControlDisabled={false}
         selectedCount={23}
       ></Header>
-      { dialogClosed &&
-        <AppRow service={props.service}/>
+      { dialogAddOpen &&
+        <AppRow service={props.service} close={()=>{SetdialogAddOpen(false)}}/>
       }   
       {dialogEditOpen &&
         <EditRow service={props.service} formValue={editFormData}  close={()=>{SetdialogEditOpen(false)}}/>
