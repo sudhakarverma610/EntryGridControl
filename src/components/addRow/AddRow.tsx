@@ -1,7 +1,7 @@
 import { DefaultButton, Panel, PanelType, PrimaryButton } from "@fluentui/react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useBoolean } from '@fluentui/react-hooks';
 import { IAppColumn } from "../../models/column";
 import  RenderControl from "./RenderControl";
@@ -9,14 +9,14 @@ import { gridActions } from "../../store/feature/gridSlice";
 import { PCFWebAPI } from "../../services/DataverseService";
 import { saveDmRecord } from "../../services/DMPlanService";
 
-export default function AppRow(prop:{service:PCFWebAPI}) {
-    const isAddEnabled = useSelector((state: RootState) => state.grid.onClickOfNewRow);
+export default function AppRow(prop:{service:PCFWebAPI,close:()=>void}) {
+    const isAddEnabled = true;
     const columns = useSelector((state: RootState) => state.grid.columns);
     const formValueSelector = useSelector((state: RootState) => state.grid.addNewForm);
     const [isOpen, { setTrue: openPanel, setFalse: dismissPanel }] = useBoolean(false);
     const [formSubmitted,setFormSubmitted] = useState(false);
     const [addRowForm, setAddRowForm] = useState<any>({});
-    const dispatch = useDispatch();       
+    const dispatch = useDispatch();        
     useEffect(()=>{       
       if (isAddEnabled && !isOpen) {
         console.log("Opening panel");
@@ -26,8 +26,10 @@ export default function AppRow(prop:{service:PCFWebAPI}) {
         dismissPanel();
       }
     },[isAddEnabled, isOpen, openPanel, dismissPanel]);
+    
     const onclose=()=>{
-      dispatch(gridActions.addNewRow(false))
+      // dispatch(gridActions.addNewRow(false))
+      prop.close();
       dismissPanel();
  
     }
@@ -57,8 +59,9 @@ export default function AppRow(prop:{service:PCFWebAPI}) {
             //prop.service.updateRowNumber(rowNumber+1);
             dataToSentToServer.rowNo=it.Data;
             dataToSentToServer.key=it.Data;
-            dispatch(gridActions.insertNewRow(dataToSentToServer));                
-            dispatch(gridActions.addNewRow(false))
+            dispatch(gridActions.insertNewRow(dataToSentToServer));    
+            prop.close();         
+            
             dismissPanel(); 
             })  
       } 
