@@ -285,7 +285,7 @@ export default function GridView(props: {
   return (
     <div
       className="details-list-container"
-      style={{ height: "400px", overflowY: "auto", position: "relative" }}
+      style={{ height: "805px", overflowY: "auto", position: "relative" }}
     >
     
         <DetailsList
